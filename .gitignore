@@ -205,3 +205,6 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# for ML/AI projects it is recommended to not upload huge datasets, esp. images
+bee_imgs/
