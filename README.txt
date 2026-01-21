@@ -12,3 +12,22 @@ pip install -r requirements.txt
 
 For readme, since I didn't upload the dataset to github, use Jenny Yang's BeeImage dataset from Kaggle
 https://www.kaggle.com/datasets/jenny18/honey-bee-annotated-images
+is automatic download solvable with a script? Google Drive or Kaggle
+
+https://www.youtube.com/watch?v=33ysE1Gt1G4&list=PLCC34OHNcOtpcgR9LEYSdi9r7XIbpkpK1&index=14
+
+I could further proof it by using own images?
+
+I could use a library that explains what the model considers important parts of the image
+
+Explain in theis what the limitations are
+Limitations of public datasets
+
+Gap between academic and real-world ML
+
+Ethical considerations
+
+Future work for deployment
+
+
+Start out with most basic CNN
