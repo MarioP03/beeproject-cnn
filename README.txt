@@ -31,3 +31,10 @@ Future work for deployment
 
 
 Start out with most basic CNN
+
+Next up: 
+- more cnn models
+    - before that, fix classes (multiple, healthy, unhealthy)
+- random forest, svm for images
+
+For understanding I stopped at Cell 2
