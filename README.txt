@@ -2,6 +2,9 @@ First activate venv
 Then download requirements.txt
 Select interpreter?
 
+The project is organized by data, models, notebooks, and results.
+Each model is implemented in a separate Python file to keep the comparison clear.
+
 What could increase  model performance is more images, thats why as i said in the proposal, we need more data
 how can I be sure to trust the author of the data
 my images are color, meaning 3D tensors will be used, color layer (height, width and color) will be separated into 3 dimensions: result in height-width-red, height-width-green, height-width-blue
@@ -38,3 +41,13 @@ Next up:
 - random forest, svm for images
 
 For understanding I stopped at Cell 2
+
+Deepak Meeting 02.02:
+TODO
+- Implement all three algorithms
+- Present an initial comparison of the results
+
+Achieved:
+- neater workspace organization
+-- data, models, notebooks, and results
+-- separate file for each model, so results are clean
