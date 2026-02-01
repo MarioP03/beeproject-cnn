@@ -51,3 +51,6 @@ Achieved:
 - neater workspace organization
 -- data, models, notebooks, and results
 -- separate file for each model, so results are clean
+
+TODO:
+- clean cnn of exploration and data cleaning
