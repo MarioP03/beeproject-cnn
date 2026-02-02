@@ -11,6 +11,8 @@ my images are color, meaning 3D tensors will be used, color layer (height, width
 Images range between great differences: 137 x 121 to things like 46x 60 pixels - result in smaller images upsampled with larger images downsampled with using 128x128
 keras is used: keras is a high-level library built on top of tensorflow, simple and intuitive
 
+For future work, it would also be possible to use Transfer Learning, in order to leverage pre-trained transformers, for example for images.
+
 pip install -r requirements.txt
 
 For readme, since I didn't upload the dataset to github, use Jenny Yang's BeeImage dataset from Kaggle
@@ -46,6 +48,10 @@ Deepak Meeting 02.02:
 TODO
 - Implement all three algorithms
 - Present an initial comparison of the results
+# More random for split in cnn
+# Strategy to overcome overfitting
+# Model loss
+# Important: undestand output
 
 Achieved:
 - neater workspace organization
