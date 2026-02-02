@@ -57,6 +57,18 @@ Achieved:
 - neater workspace organization
 -- data, models, notebooks, and results
 -- separate file for each model, so results are clean
+- random forest
+- further understanding
+
+https://www.datacamp.com/tutorial/convolutional-neural-networks-python
+https://www.datacamp.com/tutorial/pytorch-cnn-tutorial
+https://www.datacamp.com/tutorial/random-forests-classifier-python
+https://www.kaggle.com/code/prashant111/random-forest-classifier-tutorial
 
 TODO:
 - clean cnn of exploration and data cleaning
+- svm
+- halve the healthy or make unhealthy bigger -> balance the classes
+- after conclusion, try to come up with a concrete result and a reason, why one model performs better or worse, focus on main conclusion, RQ
+read and think of strengths, weaknesses in literature, see if it applies
+Feb 12th Feb 15:00
