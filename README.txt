@@ -60,6 +60,8 @@ Achieved:
 - random forest
 - further understanding
 
+# As early disease detection and prevention is really important, thats why models are already good-enough if they can differentiate between 2 classes. Future work could be even better performance for all 6 health classes, due to data imbalance and model suit.
+
 https://www.datacamp.com/tutorial/convolutional-neural-networks-python
 https://www.datacamp.com/tutorial/pytorch-cnn-tutorial
 https://www.datacamp.com/tutorial/random-forests-classifier-python
@@ -70,5 +72,5 @@ TODO:
 - svm
 - halve the healthy or make unhealthy bigger -> balance the classes
 - after conclusion, try to come up with a concrete result and a reason, why one model performs better or worse, focus on main conclusion, RQ
-read and think of strengths, weaknesses in literature, see if it applies
+read and think of strengths, weaknesses in literature, see if it applies; see what methods papers use, see if they also utilized the same with different parameters.
 Feb 12th Feb 15:00
