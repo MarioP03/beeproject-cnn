@@ -136,3 +136,21 @@ Ranking (based on F1-score):
 4. Hybrid
 
 But new order might be more applicable, because we want to eliminate False Positives (predicted as healthy, when in reality unhealthy), so maybe Precision should be focused
+
+"You're on a really good track"
+We stop the implementation here
+Next up: March 2nd: New meeting
+To-do:
+- Read more papers
+- read my own proposal
+- put 4.1 in Background
+- 4.4 in chapter 1
+- New chapter 5 - Evaluation/Results: How I did and what I got, go into detail here and include many relevant works
+- Plan and Approach is in Chapter 1, Background is in Chapter 2
+- In conclusion: importance of work - how it helps, what this brings to researchers, farmers - conclusion or discussion
+- Approach: bee data source, ml pipeline, describe bit of code, show images, but not so much, describe practical work but not so much
+- Include new material and references, sources, papers: cnn works who did what and what i did, how it relates to mine; find papers not necessarily about bees, also we re doing it for algorithms and machine learning, others did this with cnn and I did this
+- Aim for Journals, best
+- Second best: Conference papers
+- How many pepople referenced a paper, google scholar shows, the more people the better
+- Informatics books are old-fashioned
