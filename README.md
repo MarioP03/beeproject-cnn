@@ -100,15 +100,39 @@ Plans:
 ## CNN
 ![alt text](conf_cnn.png)
 ![alt text](metrics_cnn.png)
+- Accuracy: 0.92
+- Precision: macro avg - 0.87, weighted avg - 0.92
+- Recall: 0.81, 0.92
+- F1-score: 0.83, 0.92
 
 ## Random Forest
 ![alt text](conf_rf.png)
 ![alt text](metrics_rf.png)
+- Accuracy: 0.93
+- Precision: 0.95
+- Recall: 0.90
+- F1-score: 0.92
 
 ## SVM
 ![alt text](conf_svm.png)
 ![alt text](metrics_svm.png)
+- Accuracy: 0.95
+- Precision: 0.95
+- Recall: 0.93
+- F1-score: 0.94
 
 ## CNN + SVM Hybrid
 ![alt text](conf_hybrid.png)
 ![alt text](metrics_hybrid.png)
+- Accuracy: 0.88
+- Precision: 0.92
+- Recall: 0.82
+- F1-score: 0.85
+
+Ranking (based on F1-score):
+1. SVM
+2. Random Forest
+3. Convolutional Neural Network (with all features)
+4. Hybrid
+
+But new order might be more applicable, because we want to eliminate False Positives (predicted as healthy, when in reality unhealthy), so maybe Precision should be focused
