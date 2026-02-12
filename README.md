@@ -83,13 +83,32 @@ Achieved as of last time:
 
 Plans: 
 - read more literature, get specific comparison
+- balance the dataset in all cases (oversample/undersample), because so far i only used stratify, which doesnt help with imbalance 
+- CNN to binary classifier, test again
 - bring more concrete evidence, in numbers etc.
 - tune models, and hyperparameters, see how it performs
 
 
-| Approach | What It Is (Short) | Pros (Image Classification) | Cons (Image Classification) | Notes (General) |
+| Approach | What It Is | Pros ( forImage Classification) | Cons (for Image Classification) | Notes  |
 |---|---|---|---|---|
-| Convolutional Neural Network (CNN) | End‑to‑end deep model that learns features + classifier | Learns spatial features automatically; strong accuracy; scales to large datasets | Data‑hungry; needs GPU/compute; more complex to tune; less interpretable | Best when you have many labeled images |
-| Random Forest | Ensemble of decision trees on engineered features | Fast to train; robust to noise; interpretable via feature importance | Needs handcrafted features; struggles with raw pixels; limited for high‑dimensional image data | Solid baseline for tabular features |
-| SVM | Margin‑based classifier (often with kernels) | Effective on small/medium datasets; strong with good features; good generalization | Needs feature engineering; scales poorly with large datasets; kernel choice sensitive | Good when data is limited and features are strong |
+| Convolutional Neural Network (CNN) | deep learning model that learns features + classifier | Learns spatial features automatically; strong accuracy; scales to large datasets; is well-suited to multiple class predictions | Data‑hungry; need GPU/compute power; more complex to tune (knowledge of Neural Network training); less interpretable | Best when you have many labeled images |
+| Random Forest | Ensemble (Bagging) of decision trees on engineered features | Fast to train; robust to noise; interpretable via feature importance (which is difficult to interpret with images) | Needs handcrafted features; struggles with raw pixels; limited for high‑dimensional image data; binary classification | Solid baseline model |
+| SVM | Margin‑based classifier ( with kernels) | Effective on small/medium datasets; strong with good features; good generalization | Needs feature engineering; poor with large datasets; kernel choice sensitive; high computational power required or PCA with high-dimensional data | Good when data is limited and features are strong |
 | Hybrid (CNN features + SVM) | CNN extracts features, SVM classifies | Works well with limited data; leverages CNN feature power; simpler classifier | Two‑stage pipeline; feature extraction cost; tuning both parts | Often strong when labels are scarce but compute is available |
+
+# Confusion Matrix and Performance!
+## CNN
+![alt text](conf_cnn.png)
+![alt text](metrics_cnn.png)
+
+## Random Forest
+![alt text](conf_rf.png)
+![alt text](metrics_rf.png)
+
+## SVM
+![alt text](conf_svm.png)
+![alt text](metrics_svm.png)
+
+## CNN + SVM Hybrid
+![alt text](conf_hybrid.png)
+![alt text](metrics_hybrid.png)
