@@ -74,3 +74,22 @@ TODO:
 - after conclusion, try to come up with a concrete result and a reason, why one model performs better or worse, focus on main conclusion, RQ
 read and think of strengths, weaknesses in literature, see if it applies; see what methods papers use, see if they also utilized the same with different parameters.
 Feb 12th Feb 15:00
+
+Achieved as of last time:
+- SVM implementation with PCA
+- CNN + SVM hybrid with PCA
+- read literature, made notes
+- revised machine learning knowledge for strengths and weaknesses of methods
+
+Plans: 
+- read more literature, get specific comparison
+- bring more concrete evidence, in numbers etc.
+- tune models, and hyperparameters, see how it performs
+
+
+| Approach | What It Is (Short) | Pros (Image Classification) | Cons (Image Classification) | Notes (General) |
+|---|---|---|---|---|
+| Convolutional Neural Network (CNN) | End‑to‑end deep model that learns features + classifier | Learns spatial features automatically; strong accuracy; scales to large datasets | Data‑hungry; needs GPU/compute; more complex to tune; less interpretable | Best when you have many labeled images |
+| Random Forest | Ensemble of decision trees on engineered features | Fast to train; robust to noise; interpretable via feature importance | Needs handcrafted features; struggles with raw pixels; limited for high‑dimensional image data | Solid baseline for tabular features |
+| SVM | Margin‑based classifier (often with kernels) | Effective on small/medium datasets; strong with good features; good generalization | Needs feature engineering; scales poorly with large datasets; kernel choice sensitive | Good when data is limited and features are strong |
+| Hybrid (CNN features + SVM) | CNN extracts features, SVM classifies | Works well with limited data; leverages CNN feature power; simpler classifier | Two‑stage pipeline; feature extraction cost; tuning both parts | Often strong when labels are scarce but compute is available |
