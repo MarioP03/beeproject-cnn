@@ -3,13 +3,15 @@ Simple Bee Dataset Splitter (stratified by health label only).
 
 This script reads a CSV, creates train/validation/test splits using
 stratification on the "health" column, and saves only:
-    file_name, health, split_group
+    file, health, split_group
 
 Usage:
     python split.py --input data/raw/bee_data.csv --output data/processed/processed_bee_data.csv
 """
 
 import argparse
+from datetime import datetime
+from pathlib import Path
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -30,7 +32,7 @@ def parse_args():
 
 def validate_input(df, train_ratio, val_ratio):
     """Check required columns and valid split ratios."""
-    required_cols = {"file_name", "health"}
+    required_cols = {"file", "health"}
     missing = required_cols - set(df.columns)
     if missing:
         raise ValueError(f"Missing required columns: {missing}")
@@ -91,6 +93,14 @@ def print_summary(df):
     print(distribution.to_string(index=False))
 
 
+def build_timestamped_output_path(output_path):
+    """Add current timestamp to output filename so each run creates a new file."""
+    base_path = Path(output_path)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    stamped_name = f"{base_path.stem}_{timestamp}{base_path.suffix}"
+    return base_path.with_name(stamped_name)
+
+
 def main():
     args = parse_args()
 
@@ -103,10 +113,12 @@ def main():
     print_summary(split_df)
 
     # Final output: exactly three columns.
-    processed_df = split_df[["file_name", "health", "split_group"]].copy()
-    processed_df.to_csv(args.output, index=False)
+    processed_df = split_df[["file", "health", "split_group"]].copy()
+    stamped_output = build_timestamped_output_path(args.output)
+    stamped_output.parent.mkdir(parents=True, exist_ok=True)
+    processed_df.to_csv(stamped_output, index=False)
 
-    print(f"\nSaved processed file to: {args.output}")
+    print(f"\nSaved processed file to: {stamped_output}")
     print(f"Columns: {list(processed_df.columns)}")
     print(f"Rows: {len(processed_df)}")
 
