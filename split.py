@@ -1,113 +1,53 @@
 """
-split.py — Bee Health Dataset Splitter
-=======================================
-Uses the full original CSV (with metadata) to make an informed,
-leakage-aware split, then outputs a clean manifest.csv with only:
-    file_name | health | split
+Simple Bee Dataset Splitter (stratified by health label only).
+
+This script reads a CSV, creates train/validation/test splits using
+stratification on the "health" column, and saves only:
+    file_name, health, split
 
 Usage:
-    python split.py --input bees.csv --output manifest.csv
-
-Optional flags:
-    --train_ratio   float  default 0.70
-    --val_ratio     float  default 0.15
-    --test_ratio    float  default 0.15  (remainder)
-    --seed          int    default 42
-    --group_by      str    default "location"  (set to "none" to disable)
+    python split.py --input data/raw/bee_data.csv --output data/processed/manifest.csv
 """
 
 import argparse
+
 import pandas as pd
-import numpy as np
 from sklearn.model_selection import train_test_split
 
 
-# ─────────────────────────────────────────────
-# 1. CLI arguments
-# ─────────────────────────────────────────────
 def parse_args():
-    parser = argparse.ArgumentParser(description="Create a reproducible train/val/test manifest for the bee dataset.")
-    parser.add_argument("--input",       type=str,   default="bees.csv",      help="Path to the original raw CSV")
-    parser.add_argument("--output",      type=str,   default="processed_beedata.csv",  help="Path for the output manifest CSV")
-    parser.add_argument("--train_ratio", type=float, default=0.70)
-    parser.add_argument("--val_ratio",   type=float, default=0.15)
-    parser.add_argument("--seed",        type=int,   default=42)
-    parser.add_argument(
-        "--group_by",
-        type=str,
-        default="location",
-        help="Column to group by for leakage-aware splitting. Set to 'none' to use plain stratified split."
+    """Read command-line arguments."""
+    parser = argparse.ArgumentParser(
+        description="Create a train/val/test manifest using stratified split on health labels."
     )
+    parser.add_argument("--input", type=str, default="data/raw/bee_data.csv", help="Path to input CSV file")
+    parser.add_argument("--output", type=str, default="data/processed/processed_bee_data.csv", help="Path to output manifest CSV")
+    parser.add_argument("--train_ratio", type=float, default=0.70, help="Fraction for train split")
+    parser.add_argument("--val_ratio", type=float, default=0.15, help="Fraction for validation split")
+    parser.add_argument("--seed", type=int, default=9889, help="Random seed for reproducibility")
     return parser.parse_args()
 
 
-# ─────────────────────────────────────────────
-# 2. Audit helper — prints grouping info so you
-#    can make an informed decision before running
-# ─────────────────────────────────────────────
-def audit_dataset(df, group_col):
-    print("\n── Dataset Audit ──────────────────────────────")
-    print(f"  Total rows      : {len(df)}")
-    print(f"  Unique images   : {df['file_name'].nunique()}")
-    print(f"\n  Health distribution:")
-    print(df["health"].value_counts(normalize=True).mul(100).round(1).to_string(header=False))
+def validate_input(df, train_ratio, val_ratio):
+    """Check required columns and valid split ratios."""
+    required_cols = {"file_name", "health"}
+    missing = required_cols - set(df.columns)
+    if missing:
+        raise ValueError(f"Missing required columns: {missing}")
 
-    if group_col != "none" and group_col in df.columns:
-        n_groups = df[group_col].nunique()
-        avg_per_group = len(df) / n_groups
-        print(f"\n  Grouping column : '{group_col}'")
-        print(f"  Unique groups   : {n_groups}")
-        print(f"  Avg rows/group  : {avg_per_group:.1f}")
-        print(f"\n  WARNING:  Images from the same '{group_col}' will be kept")
-        print(f"     in the same split to prevent data leakage.")
-    else:
-        print(f"\n  Info:  No grouping column active → plain stratified split.")
-
-    print("────────────────────────────────────────────────\n")
+    if not (0 < train_ratio < 1):
+        raise ValueError("train_ratio must be between 0 and 1.0")
+    if not (0 < val_ratio < 1):
+        raise ValueError("val_ratio must be between 0 and 1.0")
+    if train_ratio + val_ratio >= 1:
+        raise ValueError("train_ratio + val_ratio must be < 1.0")
 
 
-# ─────────────────────────────────────────────
-# 3a. Group-aware split (recommended when
-#     location / hive / subject grouping exists)
-# ─────────────────────────────────────────────
-def group_aware_split(df, group_col, train_ratio, val_ratio, seed):
-    rng = np.random.default_rng(seed)
-
-    groups = df[group_col].unique()
-    rng.shuffle(groups)
-
-    n = len(groups)
-    n_train = int(np.floor(train_ratio * n))
-    n_val   = int(np.floor(val_ratio   * n))
-
-    train_groups = set(groups[:n_train])
-    val_groups   = set(groups[n_train:n_train + n_val])
-    test_groups  = set(groups[n_train + n_val:])
-
-    conditions = [
-        df[group_col].isin(train_groups),
-        df[group_col].isin(val_groups),
-        df[group_col].isin(test_groups),
-    ]
-    choices = ["train", "val", "test"]
-    df = df.copy()
-    df["split"] = np.select(conditions, choices, default="test")
-
-    print(f"  Group-aware split on '{group_col}':")
-    print(f"    train groups : {len(train_groups)}  ({(df['split']=='train').sum()} rows)")
-    print(f"    val   groups : {len(val_groups)}  ({(df['split']=='val').sum()} rows)")
-    print(f"    test  groups : {len(test_groups)}  ({(df['split']=='test').sum()} rows)")
-
-    return df
-
-
-# ─────────────────────────────────────────────
-# 3b. Plain stratified split (when no grouping
-#     is needed or group column is absent)
-# ─────────────────────────────────────────────
 def stratified_split(df, train_ratio, val_ratio, seed):
+    """Create train/val/test splits while preserving health label proportions."""
     test_ratio = 1.0 - train_ratio - val_ratio
 
+    # Step 1: split into train and temp (val + test)
     train_df, temp_df = train_test_split(
         df,
         test_size=(val_ratio + test_ratio),
@@ -115,7 +55,7 @@ def stratified_split(df, train_ratio, val_ratio, seed):
         random_state=seed,
     )
 
-    # Split the temp portion into val and test, keeping stratification
+    # Step 2: split temp into val and test, also stratified by health
     relative_val_size = val_ratio / (val_ratio + test_ratio)
     val_df, test_df = train_test_split(
         temp_df,
@@ -124,80 +64,51 @@ def stratified_split(df, train_ratio, val_ratio, seed):
         random_state=seed,
     )
 
-    train_df = train_df.copy(); train_df["split"] = "train"
-    val_df   = val_df.copy();   val_df["split"]   = "val"
-    test_df  = test_df.copy();  test_df["split"]  = "test"
+    train_df = train_df.copy()
+    val_df = val_df.copy()
+    test_df = test_df.copy()
+    train_df["split_group"] = "train"
+    val_df["split_group"] = "val"
+    test_df["split_group"] = "test"
 
-    df = pd.concat([train_df, val_df, test_df], ignore_index=True)
-
-    print(f"  Stratified split:")
-    print(f"    train : {(df['split']=='train').sum()} rows")
-    print(f"    val   : {(df['split']=='val').sum()} rows")
-    print(f"    test  : {(df['split']=='test').sum()} rows")
-
-    return df
+    return pd.concat([train_df, val_df, test_df], ignore_index=True)
 
 
-# ─────────────────────────────────────────────
-# 4. Verify stratification quality
-# ─────────────────────────────────────────────
-def verify_split(df):
-    print("\n── Class distribution per split ───────────────")
-    dist = (
-        df.groupby("split")["health"]
+def print_summary(df):
+    """Print split sizes and class distribution for quick verification."""
+    print("\nSplit sizes:")
+    print(df["split_group"].value_counts().to_string())
+
+    print("\nClass distribution by split (%):")
+    distribution = (
+        df.groupby("split_group")["health"]
         .value_counts(normalize=True)
         .mul(100)
         .round(1)
         .rename("pct")
         .reset_index()
     )
-    print(dist.to_string(index=False))
-    print("────────────────────────────────────────────────\n")
+    print(distribution.to_string(index=False))
 
 
-# ─────────────────────────────────────────────
-# 5. Main
-# ─────────────────────────────────────────────
 def main():
     args = parse_args()
 
-    # Validate ratios
-    total = args.train_ratio + args.val_ratio
-    if total >= 1.0:
-        raise ValueError(f"train_ratio + val_ratio must be < 1.0, got {total}")
-
-    # Load raw data — metadata is used here and only here
-    print(f"\nLoading: {args.input}")
+    print(f"Loading data from: {args.input}")
     df = pd.read_csv(args.input)
 
-    required_cols = {"file_name", "health"}
-    missing = required_cols - set(df.columns)
-    if missing:
-        raise ValueError(f"Missing required columns: {missing}")
+    validate_input(df, args.train_ratio, args.val_ratio)
 
-    group_col = args.group_by.strip().lower()
+    split_df = stratified_split(df, args.train_ratio, args.val_ratio, args.seed)
+    print_summary(split_df)
 
-    # Audit
-    audit_dataset(df, group_col)
-
-    # Split
-    if group_col != "none" and group_col in df.columns:
-        df = group_aware_split(df, group_col, args.train_ratio, args.val_ratio, args.seed)
-    else:
-        if group_col != "none" and group_col not in df.columns:
-            print(f"  ⚠  Column '{group_col}' not found — falling back to stratified split.\n")
-        df = stratified_split(df, args.train_ratio, args.val_ratio, args.seed)
-
-    # Verify
-    verify_split(df)
-
-    # Output manifest — metadata is dropped here, only these 3 columns remain
-    manifest = df[["file_name", "health", "split"]].copy()
+    # Final output: exactly three columns.
+    manifest = split_df[["file_name", "health", "split_group"]].copy()
     manifest.to_csv(args.output, index=False)
 
-    print(f"✓  Manifest saved to: {args.output}")
-    print(f"   Columns: {list(manifest.columns)}")
-    print(f"   Rows:    {len(manifest)}\n")
+    print(f"\nSaved manifest to: {args.output}")
+    print(f"Columns: {list(manifest.columns)}")
+    print(f"Rows: {len(manifest)}")
 
 
 if __name__ == "__main__":
