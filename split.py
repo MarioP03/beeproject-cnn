@@ -24,8 +24,8 @@ def parse_args():
     )
     parser.add_argument("--input", type=str, default="data/raw/bee_data.csv", help="Path to input CSV file")
     parser.add_argument("--output", type=str, default="data/processed/processed_bee_data.csv", help="Path to output processed CSV")
-    parser.add_argument("--train_ratio", type=float, default=0.70, help="Fraction for train split")
-    parser.add_argument("--val_ratio", type=float, default=0.15, help="Fraction for validation split")
+    parser.add_argument("--train_ratio", type=float, default=0.80, help="Fraction for train split")
+    parser.add_argument("--val_ratio", type=float, default=0.10, help="Fraction for validation split")
     parser.add_argument("--seed", type=int, default=9889, help="Random seed for reproducibility")
     return parser.parse_args()
 
