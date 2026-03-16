@@ -147,10 +147,33 @@ To-do:
 - 4.4 in chapter 1
 - New chapter 5 - Evaluation/Results: How I did and what I got, go into detail here and include many relevant works
 - Plan and Approach is in Chapter 1, Background is in Chapter 2
+Evaluation:
 - In conclusion: importance of work - how it helps, what this brings to researchers, farmers - conclusion or discussion
 - Approach: bee data source, ml pipeline, describe bit of code, show images, but not so much, describe practical work but not so much
 - Include new material and references, sources, papers: cnn works who did what and what i did, how it relates to mine; find papers not necessarily about bees, also we re doing it for algorithms and machine learning, others did this with cnn and I did this
 - Aim for Journals, best
 - Second best: Conference papers
-- How many pepople referenced a paper, google scholar shows, the more people the better
+- How many people referenced a paper, google scholar shows, the more people the better
 - Informatics books are old-fashioned
+
+Next up - 02.03:
+Write into the evaluation and results chapter, include materials
+Re-read in some places the proposal
+conclusion: importance of work - how it helps, what this brings to researchers, farmers - conclusion or discussion
+
+
+Prompt "Does python keras CNN have built in FNN and CNN? Like how do the final results come? We need a FNN right to have a bet on the outcome"
+How CNN Keras handles CNN and FNN
+Input Image
+   ↓
+Convolution Layers (feature extraction)
+   ↓
+Pooling Layers (reduce size)
+   ↓
+Flatten (convert 2D → 1D vector)
+   ↓
+Dense Layers (this is your FNN part)
+   ↓
+Output Layer (prediction)
+
+R vs Python can be mentioned
