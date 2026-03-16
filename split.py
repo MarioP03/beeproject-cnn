@@ -3,10 +3,10 @@ Simple Bee Dataset Splitter (stratified by health label only).
 
 This script reads a CSV, creates train/validation/test splits using
 stratification on the "health" column, and saves only:
-    file_name, health, split
+    file_name, health, split_group
 
 Usage:
-    python split.py --input data/raw/bee_data.csv --output data/processed/manifest.csv
+    python split.py --input data/raw/bee_data.csv --output data/processed/processed_bee_data.csv
 """
 
 import argparse
@@ -18,10 +18,10 @@ from sklearn.model_selection import train_test_split
 def parse_args():
     """Read command-line arguments."""
     parser = argparse.ArgumentParser(
-        description="Create a train/val/test manifest using stratified split on health labels."
+        description="Create a train/val/test split data file using stratified split on health labels."
     )
     parser.add_argument("--input", type=str, default="data/raw/bee_data.csv", help="Path to input CSV file")
-    parser.add_argument("--output", type=str, default="data/processed/processed_bee_data.csv", help="Path to output manifest CSV")
+    parser.add_argument("--output", type=str, default="data/processed/processed_bee_data.csv", help="Path to output processed CSV")
     parser.add_argument("--train_ratio", type=float, default=0.70, help="Fraction for train split")
     parser.add_argument("--val_ratio", type=float, default=0.15, help="Fraction for validation split")
     parser.add_argument("--seed", type=int, default=9889, help="Random seed for reproducibility")
@@ -103,12 +103,12 @@ def main():
     print_summary(split_df)
 
     # Final output: exactly three columns.
-    manifest = split_df[["file_name", "health", "split_group"]].copy()
-    manifest.to_csv(args.output, index=False)
+    processed_df = split_df[["file_name", "health", "split_group"]].copy()
+    processed_df.to_csv(args.output, index=False)
 
-    print(f"\nSaved manifest to: {args.output}")
-    print(f"Columns: {list(manifest.columns)}")
-    print(f"Rows: {len(manifest)}")
+    print(f"\nSaved processed file to: {args.output}")
+    print(f"Columns: {list(processed_df.columns)}")
+    print(f"Rows: {len(processed_df)}")
 
 
 if __name__ == "__main__":
