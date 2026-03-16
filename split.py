@@ -45,6 +45,25 @@ def validate_input(df, train_ratio, val_ratio):
         raise ValueError("train_ratio + val_ratio must be < 1.0")
 
 
+def normalize_health_labels(df):
+    """Normalize health labels by trimming quotes and merging equivalent class names."""
+    canonical_map = {
+        "few varrao, hive beetles": "Varroa, Small Hive Beetles",
+    }
+
+    def _normalize_label(value):
+        if not isinstance(value, str):
+            return value
+        trimmed = value.strip('"').strip()
+        return canonical_map.get(trimmed, trimmed)
+
+    cleaned = df["health"].apply(_normalize_label)
+    changes = (cleaned != df["health"]).sum()
+    df = df.copy()
+    df["health"] = cleaned
+    return df, int(changes)
+
+
 def stratified_split(df, train_ratio, val_ratio, seed):
     """Create train/val/test splits while preserving health label proportions."""
     test_ratio = 1.0 - train_ratio - val_ratio
@@ -109,6 +128,10 @@ def main():
 
     validate_input(df, args.train_ratio, args.val_ratio)
 
+    df, cleaned_count = normalize_health_labels(df)
+    if cleaned_count:
+        print(f"Normalized {cleaned_count} health labels (quotes removed and equivalent labels merged).")
+
     split_df = stratified_split(df, args.train_ratio, args.val_ratio, args.seed)
     print_summary(split_df)
 
@@ -116,7 +139,7 @@ def main():
     processed_df = split_df[["file", "health", "split_group"]].copy()
     stamped_output = build_timestamped_output_path(args.output)
     stamped_output.parent.mkdir(parents=True, exist_ok=True)
-    processed_df.to_csv(stamped_output, index=False)
+    processed_df.to_csv(stamped_output, index=False, sep=";")
 
     print(f"\nSaved processed file to: {stamped_output}")
     print(f"Columns: {list(processed_df.columns)}")
