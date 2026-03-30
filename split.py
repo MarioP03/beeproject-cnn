@@ -46,16 +46,15 @@ def validate_input(df, train_ratio, val_ratio):
 
 
 def normalize_health_labels(df):
-    """Normalize health labels by trimming quotes and merging equivalent class names."""
-    canonical_map = {
-        "few varrao, hive beetles": "Varroa, Small Hive Beetles",
-    }
+    """Normalize health labels and convert them to binary healthy/unhealthy."""
 
     def _normalize_label(value):
         if not isinstance(value, str):
-            return value
+            return "unhealthy"
         trimmed = value.strip('"').strip()
-        return canonical_map.get(trimmed, trimmed)
+        if trimmed.lower() == "healthy":
+            return "healthy"
+        return "unhealthy"
 
     cleaned = df["health"].apply(_normalize_label)
     changes = (cleaned != df["health"]).sum()
@@ -130,7 +129,7 @@ def main():
 
     df, cleaned_count = normalize_health_labels(df)
     if cleaned_count:
-        print(f"Normalized {cleaned_count} health labels (quotes removed and equivalent labels merged).")
+        print(f"Normalized {cleaned_count} health labels and converted to binary classes.")
 
     split_df = stratified_split(df, args.train_ratio, args.val_ratio, args.seed)
     print_summary(split_df)
