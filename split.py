@@ -7,6 +7,9 @@ stratification on the "health" column, and saves only:
 
 Usage:
     python split.py --input data/raw/bee_data.csv --output data/processed/processed_bee_data.csv
+
+By default, this script first ensures the Kaggle bee dataset exists locally
+under the data folder.
 """
 
 import argparse
@@ -15,6 +18,8 @@ from pathlib import Path
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
+
+from download_dataset import ensure_bee_dataset
 
 
 def parse_args():
@@ -27,7 +32,25 @@ def parse_args():
     parser.add_argument("--train_ratio", type=float, default=0.80, help="Fraction for train split")
     parser.add_argument("--val_ratio", type=float, default=0.10, help="Fraction for validation split")
     parser.add_argument("--seed", type=int, default=9889, help="Random seed for reproducibility")
+    parser.add_argument(
+        "--skip_dataset_download",
+        action="store_true",
+        help="Skip checking/downloading Kaggle dataset before splitting",
+    )
+    parser.add_argument(
+        "--force_dataset_download",
+        action="store_true",
+        help="Force re-copying downloaded CSV/images into the local data folder",
+    )
     return parser.parse_args()
+
+
+def infer_data_dir_from_input(input_path):
+    """Infer top-level data directory when input is data/raw/bee_data.csv."""
+    path = Path(input_path)
+    if path.name.lower() == "bee_data.csv" and path.parent.name.lower() == "raw":
+        return path.parent.parent
+    return Path("data")
 
 
 def validate_input(df, train_ratio, val_ratio):
@@ -121,6 +144,10 @@ def build_timestamped_output_path(output_path):
 
 def main():
     args = parse_args()
+
+    if not args.skip_dataset_download:
+        data_dir = infer_data_dir_from_input(args.input)
+        ensure_bee_dataset(data_dir=data_dir, force=args.force_dataset_download)
 
     print(f"Loading data from: {args.input}")
     df = pd.read_csv(args.input)

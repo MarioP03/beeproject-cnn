@@ -1,3 +1,27 @@
+## Dataset download (Kaggle)
+
+This repository does not include the full image dataset in Git.
+
+To download and stage the dataset locally:
+
+1. Install dependencies and kagglehub:
+   pip install -r requirements.txt
+   pip install kagglehub
+2. Set up Kaggle API credentials (one-time):
+   - Create API token from your Kaggle account settings.
+   - Put kaggle.json in %USERPROFILE%/.kaggle/kaggle.json
+   - Or set KAGGLE_USERNAME and KAGGLE_KEY as environment variables.
+3. Run the downloader directly:
+   python download_dataset.py
+
+You can also run split directly. It now checks/downloads the dataset before splitting:
+
+python split.py --input data/raw/bee_data.csv --output data/processed/processed_bee_data.csv
+
+Optional flags:
+- --skip_dataset_download
+- --force_dataset_download
+
 First activate venv
 Then download requirements.txt
 Select interpreter?
