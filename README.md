@@ -29,6 +29,10 @@ Select interpreter?
 The project is organized by data, models, notebooks, and results.
 Each model is implemented in a separate Python file to keep the comparison clear.
 
+Keep only one heavy training notebook open at a time.
+If sometime you run multiple models after each other, the kernel can get overwhelmed. in this case, restart it and re-do the steps in your current notebook.
+It was aimed at that big libraries only to be imported when they are used to reduce upfront tax on hardware and memory - Some bigger libraries were imported
+
 What could increase  model performance is more images, thats why as i said in the proposal, we need more data
 how can I be sure to trust the author of the data
 my images are color, meaning 3D tensors will be used, color layer (height, width and color) will be separated into 3 dimensions: result in height-width-red, height-width-green, height-width-blue

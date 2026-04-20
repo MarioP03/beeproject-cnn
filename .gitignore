@@ -208,3 +208,4 @@ __marimo__/
 
 # for ML/AI projects it is recommended to not upload huge datasets, esp. images
 bee_imgs/
+models/best_cnn.keras
