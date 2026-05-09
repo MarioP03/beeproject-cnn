@@ -1,7 +1,7 @@
 """
 Download and stage the bee dataset from Kaggle.
 
-This script downloads the dataset cache via kagglehub and copies the required
+This script downloads the dataset cache from kagglehub and copies the required
 files into this project structure:
     data/raw/bee_data.csv
     data/bee_imgs/*
@@ -25,6 +25,7 @@ IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".bmp", ".webp", ".tif", ".tiff"}
 
 
 def parse_args() -> argparse.Namespace:
+    # Allow callers to override the target data folder, dataset reference, and overwrite mode.
     parser = argparse.ArgumentParser(description="Download bee dataset from Kaggle into the local data folder.")
     parser.add_argument("--data_dir", type=str, default="data", help="Target data directory (default: data)")
     parser.add_argument("--dataset", type=str, default=DATASET_REF, help="Kaggle dataset reference")
@@ -33,6 +34,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def _has_kaggle_credentials() -> bool:
+    # Accept either the environment variable auth or the standard kaggle.json file.
     env_auth = os.getenv("KAGGLE_USERNAME") and os.getenv("KAGGLE_KEY")
     file_auth = (Path.home() / ".kaggle" / "kaggle.json").exists()
     return bool(env_auth or file_auth)
@@ -49,6 +51,7 @@ def _contains_images(folder: Path) -> bool:
 
 
 def _find_source_csv(download_path: Path) -> Path:
+    # Prefer the expected top-level CSV path(if that doesn't work, then fall back to a recursive search.)
     direct = download_path / CSV_NAME
     if direct.exists():
         return direct
@@ -70,6 +73,7 @@ def _find_source_images_root(download_path: Path) -> Path:
         if _contains_images(direct):
             return direct
 
+    # Some Kaggle cache layouts nest bee_imgs deeper inside the extracted folder tree.
     named_dirs = sorted(
         [p for p in download_path.rglob("*") if p.is_dir() and p.name.lower() == "bee_imgs"],
         key=lambda p: len(p.parts),
@@ -84,7 +88,7 @@ def _find_source_images_root(download_path: Path) -> Path:
 
     any_images = _contains_images(download_path)
     if any_images:
-        # Fallback: copy all image files found recursively from dataset root.
+        # Final fallback: copy every image file found anywhere under dataset root.
         return download_path
 
     raise FileNotFoundError(f"Could not find image files in downloaded dataset at {download_path}")
@@ -94,6 +98,7 @@ def _copy_images(source_root: Path, target_root: Path, force: bool) -> tuple[int
     copied = 0
     skipped = 0
 
+    # Copy images while preserving their relative folder structure below detected source root.
     image_files = [p for p in source_root.rglob("*") if p.is_file() and p.suffix.lower() in IMAGE_EXTENSIONS]
     if not image_files:
         raise FileNotFoundError(f"No image files found under: {source_root}")
@@ -115,11 +120,13 @@ def _copy_images(source_root: Path, target_root: Path, force: bool) -> tuple[int
 
 def ensure_bee_dataset(data_dir: str | Path = "data", dataset: str = DATASET_REF, force: bool = False) -> None:
     """Ensure bee CSV and image files are available in the local data directory."""
+    # Build the local project paths used by the rest of the pipeline.
     data_root = Path(data_dir)
     raw_dir = data_root / "raw"
     images_dir = data_root / "bee_imgs"
     csv_target = raw_dir / CSV_NAME
 
+    # Skip the download entirely when both the CSV and at least one image are already present.
     existing_image_count = _count_images(images_dir)
     if csv_target.exists() and existing_image_count > 0 and not force:
         print(f"Dataset already present: {csv_target} and {existing_image_count} images in {images_dir}")
@@ -135,6 +142,7 @@ def ensure_bee_dataset(data_dir: str | Path = "data", dataset: str = DATASET_REF
     print(f"Downloading dataset '{dataset}' from Kaggle...")
 
     try:
+        # kagglehub returns the cache directory where the dataset archive was extracted.
         download_path = Path(kagglehub.dataset_download(dataset))
     except Exception as exc:
         auth_hint = (
@@ -149,6 +157,7 @@ def ensure_bee_dataset(data_dir: str | Path = "data", dataset: str = DATASET_REF
     raw_dir.mkdir(parents=True, exist_ok=True)
     images_dir.mkdir(parents=True, exist_ok=True)
 
+    # Locate the source CSV and image root even if Kaggle extracted an extra directory layer.
     source_csv = _find_source_csv(download_path)
     source_images = _find_source_images_root(download_path)
 
